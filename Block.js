@@ -8,24 +8,21 @@ class Block {
     this.data = data
     this.prevHash = prevHash
     this.nonce = 0
-    this.hash = this.getHash()
     this.difficulty = '00'
   }
 
-  getHash() {
-    this.hash = Base64.stringify(
+  get hash() {
+    return Base64.stringify(
       sha256(
         this.index + this.timeStamp + this.data + this.prevHash + this.nonce
       )
     )
-    return this.hash
   }
 
   mine() {
     console.log('Mining block ...')
     while (!this.hash.startsWith(this.difficulty)) {
       this.nonce++
-      this.getHash()
     }
     console.log('Block mined ! 🎉', this.hash)
   }
