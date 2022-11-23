@@ -3,7 +3,7 @@ const Block = require('./Block')
 class Blockchain {
   constructor() {
     const genesisData = 'I am THE genesis block 💫'
-    const genesisBlock = new Block(0, null, genesisData)
+    const genesisBlock = new Block(0, null, genesisData, null)
 
     this.chain = [genesisBlock]
   }
@@ -18,11 +18,11 @@ class Blockchain {
 
   addBlock(block) {
     if (!this.isValid(block)) {
-      throw new Error('Block is corrupted ⛔️', block)
+      throw new Error('Block corrupted ⛔️\n', block)
     }
 
     this.chain.push(block)
-    console.log('Block successfully added 🧱', block)
+    console.log('Block 🧱 successfully added to chain ⛓\n\n', block)
     return block
   }
 
