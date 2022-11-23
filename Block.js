@@ -4,8 +4,8 @@ const Base64 = require('crypto-js/enc-base64')
 class Block {
   constructor(index, prevHash, data = []) {
     this.index = index
-    this.timeStamp = new Date()
-    this.data = data // [{ from, to, value }]
+    this.timeStamp = Date.now()
+    this.data = data
     this.prevHash = prevHash
     this.nonce = 0
     this.hash = this.getHash()
@@ -22,10 +22,10 @@ class Block {
   }
 
   mine() {
+    console.log('Mining block ...')
     while (!this.hash.startsWith(this.difficulty)) {
       this.nonce++
       this.getHash()
-      console.log(this.nonce)
     }
     console.log('Block mined ! 🎉', this.hash)
   }
