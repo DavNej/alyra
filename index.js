@@ -1,44 +1,52 @@
-import crypto from 'crypto-js' // https://www.npmjs.com/package/crypto-js
+const Block = require('./Block')
+const Blockchain = require('./Blockchain')
 
-class Block {
-  constructor(data = [], prevHash, index) {
-    // timeStamp
-    // data - from - to - value
-    // hash
-    // prevHash
-    // index
-    // nonce
-  }
+const transactions1 = [
+  {
+    from: 'me',
+    to: 'you',
+    value: 5,
+  },
+  {
+    from: 'her',
+    to: 'me',
+    value: 7,
+  },
+]
 
-  getHash() {
-    // Hexadécimal
-  }
+const transactions2 = [
+  {
+    from: 'him',
+    to: 'you',
+    value: 4,
+  },
+  {
+    from: 'you',
+    to: 'me',
+    value: 9,
+  },
+]
 
-  mine() {
-    // Faire une boucle
-    // Nonce++;
-    // GetHash
-    // Si 0000 Ca sera miné parfait
-    // Sinon continue la boucle
-  }
+function main() {
+  const chain = new Blockchain()
+
+  const block1 = new Block(
+    chain.lastBlock.index + 1,
+    chain.lastBlock.hash,
+    transactions1
+  )
+  block1.mine()
+  chain.addBlock(block1)
+
+  const block2 = new Block(
+    chain.lastBlock.index + 1,
+    chain.lastBlock.hash,
+    transactions2
+  )
+  block2.mine()
+  chain.addBlock(block2)
+
+  console.log(chain)
 }
 
-class Blockchain {
-  constructor() {
-    // Chain
-    // Construire un Block Génésis
-  }
-
-  getLastBlock() {
-    // Permet de récupérer le bloc length - 1 d'une blockchain
-    // return block
-  }
-
-  addBlock(block) {
-    // Permet de rajouter un block à une Blockchain
-  }
-
-  isValid(blockchain = this) {
-    // Permet de vérifier si la blockchain est valide
-  }
-}
+main()
