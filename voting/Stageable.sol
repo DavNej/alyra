@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
 
-error Stageable__ActionForbidden(uint256 _status);
+error Stageable__ActionForbiddenAtThisStage(uint256 _status);
 
 abstract contract Stageable is Ownable {
     enum WorkflowStatus {
@@ -22,7 +22,7 @@ abstract contract Stageable is Ownable {
      */
     modifier onlyInStatus(WorkflowStatus _status) {
         if (workflowStatus != _status) {
-            revert Stageable__ActionForbidden(uint256(_status));
+            revert Stageable__ActionForbiddenAtThisStage(uint256(_status));
         }
         _;
     }

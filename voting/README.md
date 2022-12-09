@@ -58,7 +58,6 @@ enum WorkflowStatus {
 
 * [x] Définir un `uint winningProposalId` qui représente l’id du gagnant ou une fonction `getWinner` qui retourne le gagnant.
 * [x] Importer le smart contract [Ownable](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol) d’OpenZepplin.
-
 * [x] Définir les événements suivants:
 
 ```solidity

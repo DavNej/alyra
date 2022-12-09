@@ -9,6 +9,19 @@ error Voting__NotInWhitelistOrOwner(address _address);
 error Voting__AlreadyVoted(address _address);
 error Voting__AlreadyRegistered(address _address);
 
+// Voters
+
+// 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+// 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+// 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+
+// Proposals
+
+// Peace on earth
+// Equality between sex
+// Ban weapons
+// Be happy together
+
 contract Voting is Ownable, Stageable {
     struct Voter {
         bool hasVoted;
@@ -31,7 +44,7 @@ contract Voting is Ownable, Stageable {
      * @dev Throws if voter is not in whitelist.
      */
     modifier onlyWhitelist() {
-        if (!whitelist[msg.sender].isRegistered) {
+        if (msg.sender == owner() || !whitelist[msg.sender].isRegistered) {
             revert Voting__NotInWhitelist(msg.sender);
         }
         _;
@@ -47,9 +60,17 @@ contract Voting is Ownable, Stageable {
         _;
     }
 
+    /**
+     * @dev Throws if index of proposal is out of range.
+     */
+    modifier onlyExistingProposal(uint256 _id) {
+        require(_id < proposals.length, "Proposal id out of range");
+        _;
+    }
+
     constructor() {
         // Proposals are initialized with a genesisProposal
-        // so when a voter has not voted, their votedProposalId will point to it.
+        // so when a voter has not voted, their votedProposalId will point to it by default.
         Proposal memory genesisProposal;
         genesisProposal
             .description = "Genesis proposal. Acts as default. Can't be voted for";
@@ -68,8 +89,8 @@ contract Voting is Ownable, Stageable {
      */
     function addVoter(address _address)
         external
-        onlyOwner
         onlyInStatus(WorkflowStatus.RegisteringVoters)
+        onlyOwner
     {
         if (whitelist[_address].isRegistered) {
             revert Voting__AlreadyRegistered(_address);
@@ -100,8 +121,8 @@ contract Voting is Ownable, Stageable {
      */
     function addProposal(string memory _description)
         external
-        onlyOwnerOrWhitelist
         onlyInStatus(WorkflowStatus.ProposalsRegistrationStarted)
+        onlyOwnerOrWhitelist
     {
         Proposal memory proposal;
         proposal.description = _description;
@@ -118,6 +139,7 @@ contract Voting is Ownable, Stageable {
     function getProposal(uint256 _proposalId)
         external
         view
+        onlyExistingProposal(_proposalId)
         onlyOwnerOrWhitelist
         returns (Proposal memory)
     {
@@ -132,30 +154,32 @@ contract Voting is Ownable, Stageable {
      */
     function vote(uint256 _proposalId)
         external
-        onlyWhitelist
         onlyInStatus(WorkflowStatus.VotingSessionStarted)
+        onlyWhitelist
+        onlyExistingProposal(_proposalId)
     {
-        require(_proposalId > 0, "Invalid proposal id");
+        require(_proposalId > 0, "Can't vote for Genesis proposal");
 
         if (whitelist[msg.sender].hasVoted) {
             revert Voting__AlreadyVoted(msg.sender);
         }
 
         whitelist[msg.sender].hasVoted = true;
+        whitelist[msg.sender].votedProposalId = _proposalId;
         proposals[_proposalId].voteCount += 1;
 
         emit Voted(msg.sender, _proposalId);
     }
 
     /**
-     * @dev Compute votes and elect the winning proposal.
+     * @dev Compute votes and declare the winning proposal.
      * Can only be called by the owner.
      * Can only be called during the {VotingSessionEnded} stage.
      */
     function computeWinner()
         external
-        onlyOwner
         onlyInStatus(WorkflowStatus.VotingSessionEnded)
+        onlyOwner
     {
         uint256 maxVoteCount;
         uint256 winnerId;
@@ -179,6 +203,7 @@ contract Voting is Ownable, Stageable {
         onlyInStatus(WorkflowStatus.VotesTallied)
         returns (string memory)
     {
+        require(winningProposalId != 0, "No winner has been declared yet");
         return proposals[winningProposalId].description;
     }
 }
