@@ -10,6 +10,10 @@ pragma solidity >=0.7.0 <0.9.0;
 contract Storage {
     uint256 s_number;
 
+    constructor() payable {
+        s_number = msg.value;
+    }
+
     /**
      * @dev Store value in variable
      * @param num value to store

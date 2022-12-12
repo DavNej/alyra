@@ -64,3 +64,11 @@ var instance = await Storage.deployed()
 await instance.store(18)
 await instance.retrieve()
 ```
+
+## Exercise
+
+* Ajouter un constructeur `payable` dans le SimpleStorage
+* Le constructeur permet de set la variable Storage et d'envoyer des Eth dessus
+* Après le déploiement (avec envoie d'ethers), ajouter un script pour get la valeur et l'afficher en `console.log` (dans 1_deploy.js).
+* Attention! Réaliser ce script dans le même fichier de déploiement 1_deploy.js
+* Puis set de nouveau la valeur, la get et la logger. Attention réaliser ce script dans le même fichier de déploiement 1_deploy.js
