@@ -1,3 +1,3 @@
 # Alyra
 
-This repository gathers the work done during the training for Smart contracts and Dapp development at Alyra, Promotion Goërli.
+Gathers work done during Smart contracts and Dapp development training at Alyra, Promotion Görli.
