@@ -2,30 +2,21 @@
 
 ## First smart contract deployment
 
-Compile contract
+1. Compile contract with `truffle compile`
+2. Run `ganache` in another terminal
+3. Create migration script `migrations/1_deploy.js`
+4. Run `truffle deploy`
+5. Run `truffle console` then
 
-```
-truffle compile
-```
-
-Run ganache in another terminal
-
-```
-ganache
-```
-
-Create migration script `1_deploy.js` in migrations
-
+```javascript
+var instance = await Storage.deployed()
+await instance.store(18)
+await instance.retrieve()
 ```
 
 ## Deploy on Goerli
 
 1. Install `@truffle/hdwallet-provider`
-
-```
-yarn add @truffle/hdwallet-provider
-```
-
 2. Get RPC URL for Görli testnet (here, done with Infura)
 3. Install `dotenv` and add the RPC URL and the wallet private key to `.env`
 4. Add `goerli` in `truffle-config.js` in `networks`
