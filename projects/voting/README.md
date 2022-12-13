@@ -69,4 +69,4 @@ event Voted (address voter, uint proposalId);
 
 ## 📌 Le formateur attends:
 
-* [ ] Lien vers Github
+* [x] Lien vers Github

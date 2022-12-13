@@ -26,6 +26,10 @@ Be happy together
 
 */
 
+/**
+ * @title Voting
+ * @dev Voting contract for small organizations
+ */
 contract Voting is Ownable, Stageable {
     struct Voter {
         bool hasVoted;
@@ -46,6 +50,7 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev Throws if voter is not in whitelist.
+     * Owner is not in whitelist.
      */
     modifier onlyWhitelist() {
         if (msg.sender == owner() || !whitelist[msg.sender].isRegistered) {
@@ -66,6 +71,7 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev Throws if index of proposal is out of range.
+     * @param _id id of the proposal
      */
     modifier onlyExistingProposal(uint256 _id) {
         require(_id < proposals.length, "Proposal id out of range");
@@ -87,6 +93,7 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev Add a new voter to the whitelist
+     * @param _address address of the voter to be registered
      * Can only be called by the current owner.
      * Can only be called during the {RegisteringVoters} stage.
      * Emits a {VoterRegistered} event indicating the voter address.
@@ -105,6 +112,8 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev See a given voter
+     * @param _address address of the voter to retrieve
+     * @return Voter
      * Can only be called by the current owner or another voter.
      * Can be called whatever the stage.
      */
@@ -119,6 +128,8 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev Add a new proposal
+     * @param _description description of the proposal to add
+     * The case in which a proposal already exists is not treated.
      * Can only be called by the current owner or another voter.
      * Can only be called during the {ProposalsRegistrationStarted} stage.
      * Emits a {ProposalRegistered} event indicating the proposal id.
@@ -138,6 +149,8 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev See a given proposal
+     * @param _description description of the proposal to add
+     * @return description of the proposal
      * Can only be called by the current owner or another voter.
      */
     function getProposal(uint256 _proposalId)
@@ -152,6 +165,8 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev Vote for a proposal
+     * @param _proposalId id of the proposal to vote for
+     * Owner is not allowed to vote
      * Can only be called by voters on the whitelist that have not voted.
      * Can only be called during the {VotingSessionStarted} stage.
      * Emits a {Voted} event indicating the voter address and the proposal id.
@@ -198,6 +213,7 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev See the descrition of the winning proposal.
+     * @return description of the winning proposal
      * Can be called by anyone.
      * Can only be called during the {VotesTallied} stage.
      */
