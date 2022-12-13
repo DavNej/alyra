@@ -41,4 +41,6 @@ npx hardhat run scripts/deploy.js
 1. Create API key on etherscan.io
 2. Add it to `.env`
 3. Edit `hardhat.config.js` to add `etherscan.apiKey`
-4. Run `yarn hardhat verify --network goerli <contract_address>`
+4. Run `yarn hardhat verify --network goerli <contract_address> <args_for_constructor>`
+
+\* `<args_for_constructor>` must be the same as they were declared in the deployment script
