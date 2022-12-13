@@ -28,3 +28,10 @@ npx hardhat run scripts/deploy.js
 2. Edit `hardhat.config.js`
 3. Edit deployment script in `scripts/deploy.js`
 4. Deploy contract with `yarn hardhat run ./scripts/deploy.js --network localhost`
+
+## Deploy to testnet (Goerli)
+
+1. Install and configure `dotenv`
+2. Edit `hardhat.config.js` to add goerli network
+3. Deploy with `yarn hardhat run ./scripts/deploy.js --network goerli`
+4. Check contract hash on [goerli.etherscan](https://goerli.etherscan.io)
