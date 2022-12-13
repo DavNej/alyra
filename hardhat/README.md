@@ -16,7 +16,15 @@ npx hardhat run scripts/deploy.js
 
 # Hardhat
 
-## Init
+## Project init
 
-1. Install hardhat
-2. run `yarn hardhat`
+1. Install `yarn -D hardhat`
+2. Run `yarn hardhat`
+3. Run local blockchain with `yarn hardhat node`
+
+## First deploy (local)
+
+1. Compile with `yarn hardhat compile`. `artifacts` folder will be created
+2. Edit `hardhat.config.js`
+3. Edit deployment script in `scripts/deploy.js`
+4. Deploy contract with `yarn hardhat run ./scripts/deploy.js --network localhost`
