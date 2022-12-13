@@ -9,18 +9,22 @@ error Voting__NotInWhitelistOrOwner(address _address);
 error Voting__AlreadyVoted(address _address);
 error Voting__AlreadyRegistered(address _address);
 
-// Voters
+/** Some values to run tests
 
-// 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
-// 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
-// 0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+Voters
 
-// Proposals
+0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db
+0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
 
-// Peace on earth
-// Equality between sex
-// Ban weapons
-// Be happy together
+Proposals
+
+Peace on earth
+Equality between sex
+Ban weapons
+Be happy together
+
+*/
 
 contract Voting is Ownable, Stageable {
     struct Voter {
