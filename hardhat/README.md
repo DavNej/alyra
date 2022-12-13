@@ -32,6 +32,13 @@ npx hardhat run scripts/deploy.js
 ## Deploy to testnet (Goerli)
 
 1. Install and configure `dotenv`
-2. Edit `hardhat.config.js` to add goerli network
-3. Deploy with `yarn hardhat run ./scripts/deploy.js --network goerli`
+2. Edit `hardhat.config.js` to add `goerli` network
+3. Deploy contract with `yarn hardhat run ./scripts/deploy.js --network goerli`
 4. Check contract hash on [goerli.etherscan](https://goerli.etherscan.io)
+
+### Contract verification
+
+1. Create API key on etherscan.io
+2. Add it to `.env`
+3. Edit `hardhat.config.js` to add `etherscan.apiKey`
+4. Run `yarn hardhat verify --network goerli <contract_address>`

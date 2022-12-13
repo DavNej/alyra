@@ -1,8 +1,11 @@
 require('@nomicfoundation/hardhat-toolbox')
+require('@nomiclabs/hardhat-etherscan')
+
 require('dotenv').config()
 
-const GOERLI_RPC = process.env.INFURA_GOERLI | ''
-const PRIVATE_KEY = process.env.PRIVATE_KEY | ''
+const GOERLI_RPC = process.env.INFURA_GOERLI || ''
+const PRIVATE_KEY = process.env.PRIVATE_KEY || ''
+const ETERSCAN_API_KEY = process.env.ETERSCAN_API_KEY || ''
 
 module.exports = {
   defaultNetwork: 'hardhat',
@@ -15,6 +18,11 @@ module.exports = {
       url: GOERLI_RPC,
       accounts: [`0x${PRIVATE_KEY}`],
       chainId: 5,
+    },
+  },
+  etherscan: {
+    apiKey: {
+      goerli: ETERSCAN_API_KEY,
     },
   },
   solidity: {
