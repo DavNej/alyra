@@ -11,7 +11,9 @@ contract Bank {
 
     function withdraw() external {
         require(balances[msg.sender] > 0, "No funds to withdraw");
-        (bool sent, ) = msg.sender.call{value: balances[msg.sender]}("");
+        uint256 balance = balances[msg.sender];
+        balances[msg.sender] = 0;
+        (bool sent, ) = msg.sender.call{value: balance}("");
         require(sent, "Withdrawal failed");
     }
 }
