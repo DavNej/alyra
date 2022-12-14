@@ -4,17 +4,21 @@ pragma solidity 0.8.17;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Hello is Ownable {
-    string name;
+    string private firstName;
 
-    constructor(string memory _name) {
-        name = _name;
+    constructor(string memory _firstName) {
+        firstName = _firstName;
     }
 
     function getName() external view returns (string memory) {
-        return name;
+        return firstName;
     }
 
-    function setName(string memory _name) external onlyOwner {
-        name = _name;
+    function setFirttName(string memory _firstName) external onlyOwner {
+        firstName = _firstName;
+    }
+
+    function sayHello() external view returns (string memory) {
+        return string(abi.encodePacked("Hello ", firstName));
     }
 }
