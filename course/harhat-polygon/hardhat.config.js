@@ -1,5 +1,5 @@
 require('@nomicfoundation/hardhat-toolbox')
-require('@nomiclabs/hardhat-etherscan')
+// require('@nomiclabs/hardhat-etherscan')
 
 require('dotenv').config()
 
@@ -16,7 +16,7 @@ module.exports = {
     polygon: {
       url: MUMBAI_RPC,
       accounts: [`0x${PRIVATE_KEY}`],
-      chainId: 5,
+      chainId: 80001,
     },
   },
   solidity: {
