@@ -11,3 +11,8 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
+
+## Hardhat deploy
+
+* Run `yarn hardhat node --no-deploy` to launch local blockchain without deploying the contract
+* Run `yarn hardhat deploy --network <network>` to deploy a contract on `<network>`
