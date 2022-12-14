@@ -14,5 +14,16 @@ npx hardhat run scripts/deploy.js
 
 ## Hardhat deploy
 
-* Run `yarn hardhat node --no-deploy` to launch local blockchain without deploying the contract
+* Run `yarn hardhat node` to launch local blockchain and deploy the contract (`yarn hardhat node --no-deploy` to launch without deploying)
+
 * Run `yarn hardhat deploy --network <network>` to deploy a contract on `<network>`
+
+Something weird => to make `ethers.getContract` => 
+
+```
+yarn add --dev hardhat @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers ethers
+```
+
+```
+yarn add --dev @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers
+```
