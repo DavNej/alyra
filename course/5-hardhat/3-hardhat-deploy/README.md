@@ -27,3 +27,5 @@ yarn add --dev hardhat @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers ether
 ```
 yarn add --dev @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers
 ```
+
+Run `yarn hardhat run ./scripts/<script> --network <network>`
