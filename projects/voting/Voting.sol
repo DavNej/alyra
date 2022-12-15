@@ -37,16 +37,15 @@ contract Voting is Ownable, Stageable {
         uint256 votedProposalId;
     }
 
-    mapping(address => Voter) whitelist;
+    mapping(address => Voter) private whitelist;
 
     struct Proposal {
         string description;
         uint256 voteCount;
     }
 
-    Proposal[] proposals;
-
-    uint256 winningProposalId;
+    Proposal[] private proposals;
+    uint256 private winningProposalId;
 
     /**
      * @dev Throws if voter is not in whitelist.
@@ -218,7 +217,7 @@ contract Voting is Ownable, Stageable {
      * Can only be called during the {VotesTallied} stage.
      */
     function getWinner()
-        public
+        external
         view
         onlyInStatus(WorkflowStatus.VotesTallied)
         returns (string memory)

@@ -15,7 +15,7 @@ abstract contract Stageable is Ownable {
         VotesTallied
     }
 
-    WorkflowStatus public workflowStatus;
+    WorkflowStatus private workflowStatus;
 
     /**
      * @dev Throws if is not in the right stage.
@@ -43,7 +43,7 @@ abstract contract Stageable is Ownable {
      * @dev Set the workflow stage to RegisteringVoters.
      * Can only be called by the current owner.
      */
-    function setRegisteringVoters() external onlyOwner {
+    function setRegisteringVoters() internal onlyOwner {
         WorkflowStatus previousStatus = workflowStatus;
         workflowStatus = WorkflowStatus.RegisteringVoters;
         emit WorkflowStatusChange(previousStatus, workflowStatus);
@@ -53,7 +53,7 @@ abstract contract Stageable is Ownable {
      * @dev Set the workflow stage to ProposalsRegistrationStarted.
      * Can only be called by the current owner.
      */
-    function setProposalsRegistrationStarted() external onlyOwner {
+    function setProposalsRegistrationStarted() internal onlyOwner {
         WorkflowStatus previousStatus = workflowStatus;
         workflowStatus = WorkflowStatus.ProposalsRegistrationStarted;
         emit WorkflowStatusChange(previousStatus, workflowStatus);
@@ -63,7 +63,7 @@ abstract contract Stageable is Ownable {
      * @dev Set the workflow stage to ProposalsRegistrationEnded.
      * Can only be called by the current owner.
      */
-    function setProposalsRegistrationEnded() external onlyOwner {
+    function setProposalsRegistrationEnded() internal onlyOwner {
         WorkflowStatus previousStatus = workflowStatus;
         workflowStatus = WorkflowStatus.ProposalsRegistrationEnded;
         emit WorkflowStatusChange(previousStatus, workflowStatus);
@@ -73,7 +73,7 @@ abstract contract Stageable is Ownable {
      * @dev Set the workflow stage to VotingSessionStarted.
      * Can only be called by the current owner.
      */
-    function setVotingSessionStarted() external onlyOwner {
+    function setVotingSessionStarted() internal onlyOwner {
         WorkflowStatus previousStatus = workflowStatus;
         workflowStatus = WorkflowStatus.VotingSessionStarted;
         emit WorkflowStatusChange(previousStatus, workflowStatus);
@@ -83,7 +83,7 @@ abstract contract Stageable is Ownable {
      * @dev Set the workflow stage to VotingSessionEnded.
      * Can only be called by the current owner.
      */
-    function setVotingSessionEnded() external onlyOwner {
+    function setVotingSessionEnded() internal onlyOwner {
         WorkflowStatus previousStatus = workflowStatus;
         workflowStatus = WorkflowStatus.VotingSessionEnded;
         emit WorkflowStatusChange(previousStatus, workflowStatus);
@@ -93,7 +93,7 @@ abstract contract Stageable is Ownable {
      * @dev Set the workflow stage to VotesTallied.
      * Can only be called by the current owner.
      */
-    function setVotesTallied() external onlyOwner {
+    function setVotesTallied() internal onlyOwner {
         WorkflowStatus previousStatus = workflowStatus;
         workflowStatus = WorkflowStatus.VotesTallied;
         emit WorkflowStatusChange(previousStatus, workflowStatus);
