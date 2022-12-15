@@ -5,8 +5,10 @@ require('@nomiclabs/hardhat-etherscan')
 require('hardhat-deploy')
 
 const ALCHEMY_GOERLI = process.env.ALCHEMY_GOERLI || ''
+const ALCHEMY_MUMBAI = process.env.ALCHEMY_MUMBAI || ''
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ''
 const ETERSCAN_API_KEY = process.env.ETERSCAN_API_KEY || ''
+const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || ''
 
 module.exports = {
   defaultNetwork: 'hardhat',
@@ -21,10 +23,17 @@ module.exports = {
       accounts: [`0x${PRIVATE_KEY}`],
       blockConfirmations: 6,
     },
+    polygonMumbai: {
+      url: ALCHEMY_MUMBAI,
+      chainId: 80001,
+      accounts: [`0x${PRIVATE_KEY}`],
+      blockConfirmations: 6,
+    },
   },
   etherscan: {
     apiKey: {
       goerli: ETERSCAN_API_KEY,
+      polygonMumbai: POLYGONSCAN_API_KEY,
     },
   },
   namedAccounts: {
