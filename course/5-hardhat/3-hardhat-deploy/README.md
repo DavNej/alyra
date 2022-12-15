@@ -18,14 +18,6 @@ npx hardhat run scripts/deploy.js
 
 * Run `yarn hardhat deploy --network <network>` to deploy a contract on `<network>`
 
-Something weird => to make `ethers.getContract` => 
-
-```
-yarn add --dev hardhat @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers ethers
-```
-
-```
-yarn add --dev @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers
-```
+Something weird => to make `ethers.getContract` => `yarn add -D @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers`
 
 Run `yarn hardhat run ./scripts/<script> --network <network>`

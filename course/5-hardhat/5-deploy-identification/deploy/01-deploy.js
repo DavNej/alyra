@@ -25,3 +25,5 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     await verify(Identification.address, args)
   }
 }
+
+module.exports.tags = ['']
