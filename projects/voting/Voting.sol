@@ -148,7 +148,7 @@ contract Voting is Ownable, Stageable {
 
     /**
      * @dev See a given proposal
-     * @param _description description of the proposal to add
+     * @param _proposalId id of the proposal to retieve
      * @return description of the proposal
      * Can only be called by the current owner or another voter.
      */
