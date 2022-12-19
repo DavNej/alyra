@@ -1,8 +1,10 @@
-require('dotenv').config()
-
 require('@nomicfoundation/hardhat-toolbox')
 require('@nomiclabs/hardhat-etherscan')
+require('hardhat-gas-reporter')
+require('solidity-coverage')
+
 require('hardhat-deploy')
+require('dotenv').config()
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ''
 
@@ -43,6 +45,9 @@ module.exports = {
       default: 0,
       1: 0,
     },
+  },
+  gasReporter: {
+    enabled: true,
   },
   solidity: {
     compilers: [
