@@ -4,9 +4,11 @@ require('@nomicfoundation/hardhat-toolbox')
 require('@nomiclabs/hardhat-etherscan')
 require('hardhat-deploy')
 
+const PRIVATE_KEY = process.env.PRIVATE_KEY || ''
+
 const ALCHEMY_GOERLI = process.env.ALCHEMY_GOERLI || ''
 const ALCHEMY_MUMBAI = process.env.ALCHEMY_MUMBAI || ''
-const PRIVATE_KEY = process.env.PRIVATE_KEY || ''
+
 const ETERSCAN_API_KEY = process.env.ETERSCAN_API_KEY || ''
 const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY || ''
 
