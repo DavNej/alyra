@@ -20,8 +20,11 @@ if (developmentChains.includes(network.name)) {
     Bank = await ethers.getContract('Bank')
   })
 
-  async function deposit(value) {
-    const tx = await Bank.deposit({ value })
+  async function deposit(value, { account } = {}) {
+    const tx = account
+      ? await Bank.connect(account).deposit({ value })
+      : await Bank.deposit({ value })
+
     expect(tx).to.changeEtherBalance(
       _deployer.address,
       _deployerInitialEtherBalance - value
@@ -44,11 +47,11 @@ if (developmentChains.includes(network.name)) {
       })
 
       it('Succeed when deposit is 100 wei', async () => {
-        await deposit(100)
+        await deposit(100, { account: _deployer })
       })
 
       it('Succeed when deposit is greater than 100 wei', async () => {
-        await deposit(1000)
+        await deposit(1000, { account: _deployer })
       })
     })
 
@@ -60,10 +63,9 @@ if (developmentChains.includes(network.name)) {
       })
 
       it('Return balance and lastDeposit of account with funds', async () => {
-        await Bank.connect(_user2)
-        await deposit(1000)
+        await deposit(1000, { account: _user2 })
 
-        const tx = await Bank.getBalanceAndLastDeposit()
+        const tx = await Bank.connect(_user2).getBalanceAndLastDeposit()
 
         assert.equal(tx.balance.toString(), '1000')
         assert.equal(tx.lastDeposit.toString().indexOf('167'), 0)
