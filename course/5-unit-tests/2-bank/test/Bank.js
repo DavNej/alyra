@@ -72,24 +72,44 @@ if (developmentChains.includes(network.name)) {
 
     describe('withdraw', async () => {
       it('Revert when amount is less than 100 wei', async () => {
-        // withdraw(50)
-        // reverts with message
-        // event not emited
+        const withdrawAmount = 52
+        await expect(Bank.withdraw(withdrawAmount)).to.be.revertedWith(
+          'Minimum amount to withdraw is 100 wei'
+        )
       })
       it('Revert when amount is less than account balance', async () => {
-        // withdraw(1000)
-        // reverts with message
-        // event not emited
+        const withdrawAmount = 100000
+        await expect(Bank.withdraw(withdrawAmount)).to.be.revertedWith(
+          'Unsufficient funds'
+        )
       })
+
       it('Succeed when withdraw is 100 wei', async () => {
-        // withdraw(100)
-        // withdraw success
-        // event emited
+        const withdrawAmount = 100
+        const tx = Bank.withdraw(withdrawAmount)
+
+        expect(tx).to.changeEtherBalance(
+          _deployer.address,
+          _deployerInitialEtherBalance + withdrawAmount
+        )
+
+        expect(tx)
+          .to.emit('etherWithdrawn')
+          .withArgs(_deployer.address, withdrawAmount)
       })
+
       it('Succeed when withdraw is greater than 100 wei', async () => {
-        // withdraw(1000)
-        // withdraw success
-        // event emited
+        const withdrawAmount = 1000
+        const tx = Bank.withdraw(withdrawAmount)
+
+        expect(tx).to.changeEtherBalance(
+          _deployer.address,
+          _deployerInitialEtherBalance + withdrawAmount
+        )
+
+        expect(tx)
+          .to.emit('etherWithdrawn')
+          .withArgs(_deployer.address, withdrawAmount)
       })
     })
   })
