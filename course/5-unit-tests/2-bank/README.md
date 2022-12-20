@@ -17,7 +17,7 @@ contract Bank {
     mapping(address => Account) private accounts;
 
     event etherDeposited(address indexed account, uint256 amount);
-    event etherWithdrawed(address indexed account, uint256 amount);
+    event etherWithdrawn(address indexed account, uint256 amount);
 
     function getBalanceAndLastDeposit()
         external
