@@ -7,36 +7,54 @@ if (developmentChains.includes(network.name)) {
   let Bank
   let _deployer
   let _user
+  let _deployerInitialEtherBalance
 
   before(async () => {
     const accounts = await ethers.getSigners()
     _deployer = accounts[0]
+    _deployerInitialEtherBalance = _deployer.getBalance()
     _user = accounts[1]
     await deployments.fixture(['bank'])
+    Bank = await ethers.getContract('Bank')
   })
 
   describe('Units tests for smart contract Bank', () => {
     it('Deploy contract', async () => {
-      Bank = await ethers.getContract('Bank')
       assert.exists(Bank.deployed())
     })
   })
 
-  describe.only('deposit', async () => {
+  describe('deposit', async () => {
     it('Revert when deposit is less than 100 wei', async () => {
-      const tx = await Bank.deposit(50)
-      expect(tx).to.be.revertedWith('Minimum deposit is 100 wei')
-      expect(tx).not.to.emit('etherDeposited')
+      await expect(Bank.deposit({ value: 50 })).to.be.revertedWith(
+        'Minimum deposit is 100 wei'
+      )
+      //? est ce qu'une transaction reverted emeet un EVENT ?
+      // .not.to.emit('etherDeposited')
     })
+
     it('Succeed when deposit is 100 wei', async () => {
-      // deposit(100)
-      // deposit success
-      // event emited
+      const depositValue = 100
+      const tx = await Bank.deposit({ value: depositValue })
+      expect(tx).to.changeEtherBalance(
+        _deployer.address,
+        _deployerInitialEtherBalance - depositValue
+      )
+      expect(tx)
+        .to.emit('etherDeposited')
+        .withArgs(_deployer.address, depositValue)
     })
+
     it('Succeed when deposit is greater than 100 wei', async () => {
-      // deposit(1000)
-      // deposit success
-      // event emited
+      const depositValue = 1000
+      const tx = await Bank.deposit({ value: depositValue })
+      expect(tx).to.changeEtherBalance(
+        _deployer.address,
+        _deployerInitialEtherBalance - depositValue
+      )
+      expect(tx)
+        .to.emit('etherDeposited')
+        .withArgs(_deployer.address, depositValue)
     })
   })
 
