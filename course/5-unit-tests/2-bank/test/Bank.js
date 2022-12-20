@@ -42,16 +42,14 @@ if (developmentChains.includes(network.name)) {
         await expect(Bank.deposit({ value: 50 })).to.be.revertedWith(
           'Minimum deposit is 100 wei'
         )
-        //? est ce qu'une transaction reverted emeet un EVENT ?
-        // .not.to.emit('etherDeposited')
       })
 
       it('Succeed when deposit is 100 wei', async () => {
-        await deposit(100, { account: _deployer })
+        await deposit(100)
       })
 
       it('Succeed when deposit is greater than 100 wei', async () => {
-        await deposit(1000, { account: _deployer })
+        await deposit(1000)
       })
     })
 
@@ -66,7 +64,6 @@ if (developmentChains.includes(network.name)) {
         await deposit(1000, { account: _user2 })
 
         const tx = await Bank.connect(_user2).getBalanceAndLastDeposit()
-
         assert.equal(tx.balance.toString(), '1000')
         assert.equal(tx.lastDeposit.toString().indexOf('167'), 0)
       })

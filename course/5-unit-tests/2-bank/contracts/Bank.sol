@@ -32,8 +32,7 @@ contract Bank {
         accounts[msg.sender].balance -= _amount;
         (bool sent, ) = msg.sender.call{value: _amount}("");
 
-        if (sent) {
-            emit etherWithdrawn(msg.sender, _amount);
-        }
+        require(sent, "Could not proceed transaction");
+        emit etherWithdrawn(msg.sender, _amount);
     }
 }
