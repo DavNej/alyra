@@ -11,7 +11,7 @@ contract Spa {
         bool isAdopted;
     }
 
-    Animal[] animals;
+    Animal[] private animals;
     mapping(address => uint256) public adoptions;
 
     event animalAdded(uint256 indexed id);
@@ -77,6 +77,9 @@ contract Spa {
     }
 
     function adopt(uint256 _id) external idInArray(_id) animalExists(_id) {
+        if (animals[_id].isAdopted) {
+            revert Spa__AlreadyAdopted();
+        }
         animals[_id].isAdopted = true;
         adoptions[msg.sender] = _id;
 
@@ -95,6 +98,7 @@ contract Spa {
         bool adopted;
 
         for (uint256 i = 0; i < animals.length; i++) {
+            if (animals[i].isAdopted) continue;
             if (animals[i].age >= _maxAge) continue;
             if (animals[i].size >= _maxSize) continue;
             if (
