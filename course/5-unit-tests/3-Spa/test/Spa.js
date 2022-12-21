@@ -10,6 +10,22 @@ if (developmentChains.includes(network.name)) {
   let _user2
   let _deployerInitialEtherBalance
 
+  const elephant = {
+    race: 'elephant',
+    size: 230,
+    age: 18,
+  }
+  const dog = {
+    race: 'dog',
+    size: 70,
+    age: 5,
+  }
+  const cat = {
+    race: 'cat',
+    size: 50,
+    age: 3,
+  }
+
   before(async () => {
     const accounts = await ethers.getSigners()
     _deployer = accounts[0]
@@ -29,28 +45,94 @@ if (developmentChains.includes(network.name)) {
     })
   })
 
-  describe('add', () => {
-    const animal = {
-      race: 'Dog',
-      size: 70,
-      age: 3,
-    }
-
-    it('Reverts if age is 0', async () => {
-      await expect(spa.add(animal.race, animal.size, 0)).to.be.revertedWith(
-        'Age must be greater than 0'
-      )
+  describe('addAnimal', () => {
+    it('Reverts if race is NOT specified', async () => {
+      await expect(
+        spa.addAnimal(elephant.age, '', elephant.size)
+      ).to.be.revertedWith('Race must be specified')
     })
 
     it('Reverts if size is 0', async () => {
-      await expect(spa.add(animal.race, 0, animal.age)).to.be.revertedWith(
-        'Size must be greater than 0'
+      await expect(
+        spa.addAnimal(elephant.age, elephant.race, 0)
+      ).to.be.revertedWith('Size must be greater than 0')
+    })
+
+    it('Adds an animal', async () => {
+      const tx = await spa.addAnimal(elephant.age, elephant.race, elephant.size)
+      expect(tx).to.emit('animalAdded').withArgs(0)
+    })
+  })
+
+  describe('animalExists modifer', () => {
+    beforeEach(async () => {
+      await spa.addAnimal(elephant.age, elephant.race, elephant.size)
+      await spa.addAnimal(dog.age, dog.race, dog.size)
+      await spa.addAnimal(cat.age, cat.race, cat.size)
+    })
+
+    it('getAnimal', async () => {
+      await expect(spa.getAnimal(3)).to.be.revertedWith('Id not registered')
+
+      const deletedAnimalId = 1
+      const tx = await spa.deleteAnimal(deletedAnimalId)
+      tx.wait(1)
+
+      await expect(spa.getAnimal(deletedAnimalId)).to.be.revertedWith(
+        'Animal was deleted'
       )
     })
 
-    it('Adds an animals', async () => {
-      const tx = await spa.add(animal.race, animal.size, animal.age)
-      expect(tx).to.emit('animalAdded').withArgs(0)
+    it('deleteAnimal', async () => {
+      await expect(spa.deleteAnimal(3)).to.be.revertedWith('Id not registered')
+
+      const deletedAnimalId = 1
+      const tx = await spa.deleteAnimal(deletedAnimalId)
+      tx.wait(1)
+
+      await expect(spa.deleteAnimal(deletedAnimalId)).to.be.revertedWith(
+        'Animal was deleted'
+      )
     })
+
+    it('adoptAnimal', async () => {
+      await expect(spa.adoptAnimal(3)).to.be.revertedWith('Id not registered')
+
+      const deletedAnimalId = 1
+      const tx = await spa.deleteAnimal(deletedAnimalId)
+      tx.wait(1)
+
+      await expect(spa.adoptAnimal(deletedAnimalId)).to.be.revertedWith(
+        'Animal was deleted'
+      )
+    })
+  })
+
+  describe.skip('checkAnimalProps modifer', () => {
+    it('', async () => {})
+  })
+
+  describe.skip('getAnimal', () => {
+    it('', async () => {})
+  })
+
+  describe.skip('set', () => {
+    it('', async () => {})
+  })
+
+  describe.skip('remove', () => {
+    it('', async () => {})
+  })
+
+  describe.skip('adopt', () => {
+    it('', async () => {})
+  })
+
+  describe.skip('getAdoption', () => {
+    it('', async () => {})
+  })
+
+  describe.skip('adoptIfMax', () => {
+    it('', async () => {})
   })
 }

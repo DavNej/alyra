@@ -17,27 +17,29 @@ contract Spa {
     event animalAdded(uint256 indexed id);
     event animalAdopted(uint256 indexed _id, address indexed _addr);
 
-    modifier idInArray(uint256 _id) {
-        require(_id < animals.length, "Id not registered");
-        _;
-    }
-
     modifier animalExists(uint256 _id) {
-        require(animals[_id].age > 0, "Animal was deleted");
+        require(_id < animals.length, "Id not registered");
         require(animals[_id].size > 0, "Animal was deleted");
         _;
     }
 
-    //CRUD
-    function add(
-        string memory _race,
-        uint256 _size,
-        uint256 _age
-    ) external {
-        Animal memory animal;
-
-        require(_age > 0, "Age must be greater than 0");
+    modifier checkAnimalProps(string memory _race, uint256 _size) {
+        require(
+            keccak256(abi.encodePacked(_race)) !=
+                keccak256(abi.encodePacked("")),
+            "Race must be specified"
+        );
         require(_size > 0, "Size must be greater than 0");
+        _;
+    }
+
+    //CRUD
+    function addAnimal(
+        uint256 _age,
+        string memory _race,
+        uint256 _size
+    ) external checkAnimalProps(_race, _size) {
+        Animal memory animal;
 
         animal.age = _age;
         animal.size = _size;
@@ -48,38 +50,37 @@ contract Spa {
         emit animalAdded(animals.length - 1);
     }
 
-    function get(uint256 _id)
+    function getAnimal(uint256 _id)
         external
         view
-        idInArray(_id)
+        animalExists(_id)
         returns (Animal memory)
     {
         return animals[_id];
     }
 
-    function set(
+    function updateAnimal(
         uint256 _id,
+        uint256 _age,
         string memory _race,
         uint256 _size,
-        uint256 _age
-    ) external {
-        Animal memory animal = this.get(_id);
-
-        animal.race = _race;
-        animal.size = _size;
-        animal.age = _age;
-
-        animals[_id] = animal;
+        bool _isAdopted
+    ) external checkAnimalProps(_race, _size) {
+        animals[_id].race = _race;
+        animals[_id].size = _size;
+        animals[_id].age = _age;
+        animals[_id].isAdopted = _isAdopted;
     }
 
-    function remove(uint256 _id) external idInArray(_id) animalExists(_id) {
+    function deleteAnimal(uint256 _id) external animalExists(_id) {
         delete animals[_id];
     }
 
-    function adopt(uint256 _id) external idInArray(_id) animalExists(_id) {
+    function adoptAnimal(uint256 _id) external animalExists(_id) {
         if (animals[_id].isAdopted) {
             revert Spa__AlreadyAdopted();
         }
+
         animals[_id].isAdopted = true;
         adoptions[msg.sender] = _id;
 
@@ -90,23 +91,21 @@ contract Spa {
         return animals[adoptions[_addr]];
     }
 
-    function adoptIfMax(
+    function adoptIf(
+        uint256 _maxAge,
         string memory _race,
-        uint256 _maxSize,
-        uint256 _maxAge
+        uint256 _maxSize
     ) external returns (bool) {
         bool adopted;
+        bytes32 raceHash = keccak256(abi.encodePacked(_race));
 
         for (uint256 i = 0; i < animals.length; i++) {
             if (animals[i].isAdopted) continue;
             if (animals[i].age >= _maxAge) continue;
             if (animals[i].size >= _maxSize) continue;
-            if (
-                keccak256(abi.encodePacked(animals[i].race)) ==
-                keccak256(abi.encodePacked(_race))
-            ) {
+            if (keccak256(abi.encodePacked(animals[i].race)) == raceHash) {
                 adopted = true;
-                this.adopt(i);
+                this.adoptAnimal(i);
                 break;
             }
         }
