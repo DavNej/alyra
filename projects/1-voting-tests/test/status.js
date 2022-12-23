@@ -6,18 +6,18 @@ const { expect } = require('chai')
 
 if (developmentChains.includes(network.name)) {
   let voting
-  let _user1
+  let user1
 
   before(async () => {
     const accounts = await ethers.getSigners()
-    _user1 = accounts[1]
+    user1 = accounts[1]
   })
 
   describe('Revert if NOT called on the right WorkflowStatus', () => {
-  beforeEach(async () => {
-    await deployments.fixture(['voting'])
-    voting = await ethers.getContract('Voting')
-  })
+    beforeEach(async () => {
+      await deployments.fixture(['voting'])
+      voting = await ethers.getContract('Voting')
+    })
     describe('Function changing WorkflowStatus', () => {
       describe('startProposalsRegistering only in status "RegisteringVoters"', () => {
         afterEach(async () => {
@@ -126,7 +126,7 @@ if (developmentChains.includes(network.name)) {
 
     describe('addVoter only in status "RegisteringVoters"', () => {
       afterEach(async () => {
-        await expect(voting.addVoter(_user1.address)).to.be.revertedWith(
+        await expect(voting.addVoter(user1.address)).to.be.revertedWith(
           'Voters registration is not open yet'
         )
       })
@@ -153,12 +153,12 @@ if (developmentChains.includes(network.name)) {
 
     describe("addProposal only in status 'ProposalsRegistrationStarted'", () => {
       beforeEach(async () => {
-        await voting.addVoter(_user1.address)
+        await voting.addVoter(user1.address)
       })
 
       afterEach(async () => {
         await expect(
-          voting.connect(_user1).addProposal(proposals[1].description)
+          voting.connect(user1).addProposal(proposals[1].description)
         ).to.be.revertedWith('Proposals are not allowed yet')
       })
 
@@ -173,6 +173,33 @@ if (developmentChains.includes(network.name)) {
       })
       it("'VotingSessionStarted' status", async () => {
         await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
+      })
+      it("'VotingSessionEnded' status", async () => {
+        await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
+      })
+    })
+
+    describe('setVote only in status "VotingSessionStarted"', () => {
+      beforeEach(async () => {
+        await voting.addVoter(user1.address)
+      })
+      afterEach(async () => {
+        await expect(voting.connect(user1).setVote(1)).to.be.revertedWith(
+          'Voting session havent started yet'
+        )
+      })
+
+      it("'RegisteringVoters' status", async () => {
+        await setWorkflowStatus(voting, WorkflowStatus.RegisteringVoters)
+      })
+      it("'ProposalsRegistrationStarted' status", async () => {
+        await setWorkflowStatus(voting, WorkflowStatus.RegisteringVoters)
+      })
+      it("'ProposalsRegistrationEnded' status", async () => {
+        await setWorkflowStatus(
+          voting,
+          WorkflowStatus.ProposalsRegistrationEnded
+        )
       })
       it("'VotingSessionEnded' status", async () => {
         await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
