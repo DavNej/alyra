@@ -55,8 +55,7 @@ if (developmentChains.includes(network.name)) {
       await voting.addVoter(_user1.address)
     })
 
-    describe('startProposalsRegistering', () => {
-      it('Set proposals registration phase successfuly', async () => {
+    it('startProposalsRegistering successfuly', async () => {
         const tx = await voting.startProposalsRegistering()
         tx.wait(1)
 
@@ -75,32 +74,7 @@ if (developmentChains.includes(network.name)) {
           )
       })
 
-      describe("Fails to set proposals registration phase when NOT in status 'RegisteringVoters'", async () => {
-        afterEach(async () => {
-          await expect(voting.startProposalsRegistering()).to.be.revertedWith(
-            'Registering proposals cant be started now'
-          )
-        })
-
-        it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
-        })
-        it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
-        })
-        it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
-        })
-        it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
-        })
-
-        // no function to set status to 'VotesTallied' 🤷
-      })
-    })
-
-    describe('endProposalsRegistering', () => {
-      it('Set end of proposals registration phase successfuly', async () => {
+    it('endProposalsRegistering successfuly', async () => {
         await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
 
         const tx = await voting.endProposalsRegistering()
@@ -117,32 +91,7 @@ if (developmentChains.includes(network.name)) {
           )
       })
 
-      describe("Fails to set end of proposals registration phase when NOT in status 'ProposalsRegistrationStarted'", async () => {
-        afterEach(async () => {
-          await expect(voting.endProposalsRegistering()).to.be.revertedWith(
-            'Registering proposals havent started yet'
-          )
-        })
-
-        it("'RegisteringVoters' status", async () => {
-          await setWorkflowStatus(voting, 'RegisteringVoters')
-        })
-        it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
-        })
-        it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
-        })
-        it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
-        })
-
-        // no function to set status to 'VotesTallied' 🤷
-      })
-    })
-
-    describe('startVotingSession', () => {
-      it('Set start of voting phase successfuly', async () => {
+    it('startVotingSession successfuly', async () => {
         await voting.startProposalsRegistering()
         await voting.endProposalsRegistering()
 
@@ -160,32 +109,7 @@ if (developmentChains.includes(network.name)) {
           )
       })
 
-      describe("Fails to set start of voting phase when NOT in status 'ProposalsRegistrationEnded'", async () => {
-        afterEach(async () => {
-          await expect(voting.startVotingSession()).to.be.revertedWith(
-            'Registering proposals phase is not finished'
-          )
-        })
-
-        it("'RegisteringVoters' status", async () => {
-          await setWorkflowStatus(voting, 'RegisteringVoters')
-        })
-        it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
-        })
-        it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
-        })
-        it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
-        })
-
-        // no function to set status to 'VotesTallied' 🤷
-      })
-    })
-
-    describe('endVotingSession', () => {
-      it('Set end of voting phase successfuly', async () => {
+    it('endVotingSession successfuly', async () => {
         await voting.startProposalsRegistering()
         await voting.endProposalsRegistering()
         await voting.startVotingSession()
@@ -202,30 +126,6 @@ if (developmentChains.includes(network.name)) {
             WorkflowStatus.VotingSessionStarted,
             WorkflowStatus.VotingSessionEnded
           )
-      })
-
-      describe("Fails to set end of voting phase when NOT in status 'VotingSessionStarted'", async () => {
-        afterEach(async () => {
-          await expect(voting.endVotingSession()).to.be.revertedWith(
-            'Voting session havent started yet'
-          )
-        })
-
-        it("'RegisteringVoters' status", async () => {
-          await setWorkflowStatus(voting, 'RegisteringVoters')
-        })
-        it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
-        })
-        it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
-        })
-        it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
-        })
-
-        // no function to set status to 'VotesTallied' 🤷
-      })
     })
   })
 
@@ -250,39 +150,15 @@ if (developmentChains.includes(network.name)) {
           'Already registered'
         )
       })
-
-      describe("Can't register if NOT in 'RegisteringVoters' status", () => {
-        afterEach(async () => {
-          await expect(voting.addVoter(_user1.address)).to.be.revertedWith(
-            'Voters registration is not open yet'
-          )
-        })
-
-        it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
-  })
-        it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
-        })
-        it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
-        })
-        it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
-        })
-
-        // no function to set status to 'VotesTallied' 🤷
-      })
     })
 
     describe('getVoter', () => {
       beforeEach(async () => {
         await voting.addVoter(_user1.address)
         await voting.addVoter(_user2.address)
-        await voting.addVoter(_user3.address)
   })
 
-      it('Retrieve own voter info', async () => {
+      it("Retrieve voter's own info", async () => {
         const voter = await voting.connect(_user1).getVoter(_user1.address)
 
         assert.equal(voter.isRegistered, true)
@@ -306,6 +182,7 @@ if (developmentChains.includes(network.name)) {
       await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
     })
 
+    describe('addProposal', () => {
     it('Add a new proposal', async () => {
       const tx = await voting.connect(_user1).addProposal(proposal1)
       tx.wait(1)
@@ -325,6 +202,8 @@ if (developmentChains.includes(network.name)) {
       await expect(voting.connect(_user1).addProposal('')).to.be.revertedWith(
         'Vous ne pouvez pas ne rien proposer'
       )
+      })
+    })
     })
   })
 }
