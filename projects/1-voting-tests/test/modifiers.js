@@ -6,13 +6,11 @@ const { expect } = require('chai')
 
 if (developmentChains.includes(network.name)) {
   let voting
-  let owner
   let userInList
   let userNotInList
 
   before(async () => {
     const accounts = await ethers.getSigners()
-    owner = accounts[0]
     userInList = accounts[1]
     userNotInList = accounts[2]
   })
@@ -68,4 +66,50 @@ if (developmentChains.includes(network.name)) {
     })
   })
 
+  describe('onlyOwner modifier', () => {
+    beforeEach(async () => {
+      await deployments.fixture(['voting'])
+      voting = await ethers.getContract('Voting')
+    })
+
+    const revertMessage = 'Ownable: caller is not the owner'
+
+    it("Can't addVoter if not the owner", async () => {
+      await expect(
+        voting.connect(userInList).addVoter(userInList.address)
+      ).to.be.revertedWith(revertMessage)
+    })
+    it("Can't startProposalsRegistering if not the owner", async () => {
+      await expect(
+        voting.connect(userInList).startProposalsRegistering()
+      ).to.be.revertedWith(revertMessage)
+    })
+    it("Can't endProposalsRegistering if not the owner", async () => {
+      await setWorkflowStatus(
+        voting,
+        WorkflowStatus.ProposalsRegistrationStarted
+      )
+      await expect(
+        voting.connect(userInList).endProposalsRegistering()
+      ).to.be.revertedWith(revertMessage)
+    })
+    it("Can't startVotingSession if not the owner", async () => {
+      await setWorkflowStatus(voting, WorkflowStatus.ProposalsRegistrationEnded)
+      await expect(
+        voting.connect(userInList).startVotingSession()
+      ).to.be.revertedWith(revertMessage)
+    })
+    it("Can't endVotingSession if not the owner", async () => {
+      await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
+      await expect(
+        voting.connect(userInList).endVotingSession()
+      ).to.be.revertedWith(revertMessage)
+    })
+    it("Can't tallyVotes if not the owner", async () => {
+      await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
+      await expect(voting.connect(userInList).tallyVotes()).to.be.revertedWith(
+        revertMessage
+      )
+    })
+  })
 }
