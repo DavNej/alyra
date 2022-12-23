@@ -20,10 +20,10 @@ if (developmentChains.includes(network.name)) {
   })
 
   describe('Contract deployment', () => {
-  beforeEach(async () => {
-    await deployments.fixture(['voting'])
-    voting = await ethers.getContract('Voting')
-  })
+    beforeEach(async () => {
+      await deployments.fixture(['voting'])
+      voting = await ethers.getContract('Voting')
+    })
     it('Deploy contract and set deployer as the owner', async () => {
       assert.exists(voting.deployed())
     })
@@ -300,5 +300,45 @@ if (developmentChains.includes(network.name)) {
         )
       })
     })
+
+    describe('tallyVotes', () => {
+      const proposalIdToVoteFor = 1
+      beforeEach(async () => {
+        await deployments.fixture(['voting'])
+        voting = await ethers.getContract('Voting')
+
+        await voting.addVoter(user1.address)
+        await voting.addVoter(user2.address)
+        await voting.addVoter(user3.address)
+
+        await voting.startProposalsRegistering()
+        await voting.connect(user1).addProposal(proposals[1].description)
+        await voting.connect(user2).addProposal(proposals[2].description)
+        await voting.connect(user3).addProposal(proposals[3].description)
+        await voting.endProposalsRegistering()
+
+        await voting.startVotingSession()
+        await voting.connect(user1).setVote(proposalIdToVoteFor)
+        await voting.connect(user2).setVote(proposalIdToVoteFor)
+        await voting.connect(user3).setVote(2)
+        await voting.endVotingSession()
+      })
+
+      it('tally votes successfuly', async () => {
+        const tx = await voting.tallyVotes()
+        tx.wait(1)
+
+        const winningProposalId = await voting.winningProposalID()
+
+        assert.equal(winningProposalId, proposalIdToVoteFor)
+
+        expect(tx)
+          .to.emit('WorkflowStatusChange')
+          .withArgs(
+            WorkflowStatus.VotingSessionEnded,
+            WorkflowStatus.VotesTallied
+          )
+      })
     })
+  })
 }
