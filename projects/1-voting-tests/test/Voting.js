@@ -271,6 +271,8 @@ if (developmentChains.includes(network.name)) {
         const voteTx = await voting.connect(user1).setVote(proposalId)
         voteTx.wait(1)
 
+        expect(voteTx).to.emit('Voted').withArgs(user1.address, proposalId)
+
         const proposalRes = await voting
           .connect(user1)
           .getOneProposal(proposalId)
@@ -324,7 +326,7 @@ if (developmentChains.includes(network.name)) {
         await voting.endVotingSession()
       })
 
-      it('tally votes successfuly', async () => {
+      it('Tally votes successfuly', async () => {
         const tx = await voting.tallyVotes()
         tx.wait(1)
 
