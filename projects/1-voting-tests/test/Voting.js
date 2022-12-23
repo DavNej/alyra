@@ -1,5 +1,6 @@
 const { network, deployments, ethers } = require('hardhat')
 const { developmentChains } = require('../helper-hardhat-config')
+const { setWorkflowStatus } = require('./utils')
 
 const { assert, expect } = require('chai')
 
@@ -79,22 +80,16 @@ if (developmentChains.includes(network.name)) {
           )
         })
         it("'ProposalsRegistrationStarted' status", async () => {
-          await voting.startProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
         })
         it("'ProposalsRegistrationEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
         })
         it("'VotingSessionStarted' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionStarted')
         })
         it("'VotingSessionEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
-          await voting.endVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionEnded')
         })
 
         // no function to set status to 'VotesTallied' 🤷
@@ -103,7 +98,8 @@ if (developmentChains.includes(network.name)) {
 
     describe('endProposalsRegistering', () => {
       it('Set end of proposals registration phase successfuly', async () => {
-        await voting.startProposalsRegistering()
+        await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+
         const tx = await voting.endProposalsRegistering()
         tx.wait(1)
 
@@ -126,25 +122,16 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'RegisteringVoters' status", async () => {
-          // this test is let empty just for the afterEach to be run
+          await setWorkflowStatus(voting, 'RegisteringVoters')
         })
-
         it("'ProposalsRegistrationEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
         })
-
         it("'VotingSessionStarted' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionStarted')
         })
-
         it("'VotingSessionEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
-          await voting.endVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionEnded')
         })
 
         // no function to set status to 'VotesTallied' 🤷
@@ -178,24 +165,16 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'RegisteringVoters' status", async () => {
-          // this test is let empty just for the afterEach to be run
+          await setWorkflowStatus(voting, 'RegisteringVoters')
         })
-
         it("'ProposalsRegistrationStarted' status", async () => {
-          await voting.startProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
         })
-
         it("'VotingSessionStarted' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionStarted')
         })
-
         it("'VotingSessionEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
-          await voting.endVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionEnded')
         })
 
         // no function to set status to 'VotesTallied' 🤷
@@ -230,23 +209,16 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'RegisteringVoters' status", async () => {
-          // this test is let empty just for the afterEach to be run
+          await setWorkflowStatus(voting, 'RegisteringVoters')
         })
-
         it("'ProposalsRegistrationStarted' status", async () => {
-          await voting.startProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
         })
-
         it("'ProposalsRegistrationEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
         })
-
         it("'VotingSessionEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
-          await voting.endVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionEnded')
         })
 
         // no function to set status to 'VotesTallied' 🤷
