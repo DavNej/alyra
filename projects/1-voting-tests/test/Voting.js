@@ -51,7 +51,7 @@ if (developmentChains.includes(network.name)) {
     })
 
     describe('startProposalsRegistering', () => {
-      it('Set Proposals registration phase successfuly', async () => {
+      it('Set proposals registration phase successfuly', async () => {
         const tx = await voting.startProposalsRegistering()
         tx.wait(1)
 
@@ -72,7 +72,7 @@ if (developmentChains.includes(network.name)) {
           )
       })
 
-      describe("Fails to set Proposals registration phase when NOT in status 'RegisteringVoters'", async () => {
+      describe("Fails to set proposals registration phase when NOT in status 'RegisteringVoters'", async () => {
         afterEach(async () => {
           await expect(voting.startProposalsRegistering()).to.be.revertedWith(
             'Registering proposals cant be started now'
@@ -90,6 +90,158 @@ if (developmentChains.includes(network.name)) {
           await voting.endProposalsRegistering()
           await voting.startVotingSession()
         })
+        it("'VotingSessionEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+          await voting.endVotingSession()
+        })
+
+        // no function to set status to 'VotesTallied' 🤷
+      })
+    })
+
+    describe('endProposalsRegistering', () => {
+      it('Set end of proposals registration phase successfuly', async () => {
+        await voting.startProposalsRegistering()
+        const tx = await voting.endProposalsRegistering()
+        tx.wait(1)
+
+        const newStatus = await voting.workflowStatus()
+        assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationEnded)
+
+        expect(tx)
+          .to.emit('WorkflowStatusChange')
+          .withArgs(
+            WorkflowStatus.ProposalsRegistrationStarted,
+            WorkflowStatus.ProposalsRegistrationEnded
+          )
+      })
+
+      describe("Fails to set end of proposals registration phase when NOT in status 'ProposalsRegistrationStarted'", async () => {
+        afterEach(async () => {
+          await expect(voting.endProposalsRegistering()).to.be.revertedWith(
+            'Registering proposals havent started yet'
+          )
+        })
+
+        it("'RegisteringVoters' status", async () => {
+          // this test is let empty just for the afterEach to be run
+        })
+
+        it("'ProposalsRegistrationEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+        })
+
+        it("'VotingSessionStarted' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+        })
+
+        it("'VotingSessionEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+          await voting.endVotingSession()
+        })
+
+        // no function to set status to 'VotesTallied' 🤷
+      })
+    })
+
+    describe('startVotingSession', () => {
+      it('Set start of voting phase successfuly', async () => {
+        await voting.startProposalsRegistering()
+        await voting.endProposalsRegistering()
+
+        const tx = await voting.startVotingSession()
+        tx.wait(1)
+
+        const newStatus = await voting.workflowStatus()
+        assert.equal(newStatus, WorkflowStatus.VotingSessionStarted)
+
+        expect(tx)
+          .to.emit('WorkflowStatusChange')
+          .withArgs(
+            WorkflowStatus.ProposalsRegistrationEnded,
+            WorkflowStatus.VotingSessionStarted
+          )
+      })
+
+      describe("Fails to set start of voting phase when NOT in status 'ProposalsRegistrationEnded'", async () => {
+        afterEach(async () => {
+          await expect(voting.startVotingSession()).to.be.revertedWith(
+            'Registering proposals phase is not finished'
+          )
+        })
+
+        it("'RegisteringVoters' status", async () => {
+          // this test is let empty just for the afterEach to be run
+        })
+
+        it("'ProposalsRegistrationStarted' status", async () => {
+          await voting.startProposalsRegistering()
+        })
+
+        it("'VotingSessionStarted' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+        })
+
+        it("'VotingSessionEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+          await voting.endVotingSession()
+        })
+
+        // no function to set status to 'VotesTallied' 🤷
+      })
+    })
+
+    describe('endVotingSession', () => {
+      it('Set end of voting phase successfuly', async () => {
+        await voting.startProposalsRegistering()
+        await voting.endProposalsRegistering()
+        await voting.startVotingSession()
+
+        const tx = await voting.endVotingSession()
+        tx.wait(1)
+
+        const newStatus = await voting.workflowStatus()
+        assert.equal(newStatus, WorkflowStatus.VotingSessionEnded)
+
+        expect(tx)
+          .to.emit('WorkflowStatusChange')
+          .withArgs(
+            WorkflowStatus.VotingSessionStarted,
+            WorkflowStatus.VotingSessionEnded
+          )
+      })
+
+      describe("Fails to set end of voting phase when NOT in status 'VotingSessionStarted'", async () => {
+        afterEach(async () => {
+          await expect(voting.endVotingSession()).to.be.revertedWith(
+            'Voting session havent started yet'
+          )
+        })
+
+        it("'RegisteringVoters' status", async () => {
+          // this test is let empty just for the afterEach to be run
+        })
+
+        it("'ProposalsRegistrationStarted' status", async () => {
+          await voting.startProposalsRegistering()
+        })
+
+        it("'ProposalsRegistrationEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+        })
+
         it("'VotingSessionEnded' status", async () => {
           await voting.startProposalsRegistering()
           await voting.endProposalsRegistering()
