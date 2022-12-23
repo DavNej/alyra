@@ -1,4 +1,4 @@
-module.exports.setWorkflowStatus = async (voting, status) => {
+async function setWorkflowStatus(voting, status) {
   switch (status) {
     case 'RegisteringVoters':
       // this is let empty because it is the default status
@@ -28,4 +28,8 @@ module.exports.setWorkflowStatus = async (voting, status) => {
 
     // no function to set status to 'VotesTallied' 🤷
   }
+}
+
+module.exports = {
+  setWorkflowStatus,
 }

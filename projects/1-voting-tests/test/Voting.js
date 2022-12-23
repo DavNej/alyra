@@ -11,6 +11,10 @@ if (developmentChains.includes(network.name)) {
   let _user2
   let _user3
 
+  const proposal1 = 'Peace on earth'
+  const proposal2 = 'Be happy'
+  const proposal3 = 'Educate ourselves'
+
   const WorkflowStatus = {
     RegisteringVoters: 0,
     ProposalsRegistrationStarted: 1,
@@ -59,9 +63,7 @@ if (developmentChains.includes(network.name)) {
         const newStatus = await voting.workflowStatus()
         assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationStarted)
 
-        const genesisProposal = await voting
-          .connect(_user1.address)
-          .getOneProposal(0)
+        const genesisProposal = await voting.connect(_user1).getOneProposal(0)
         assert.equal(genesisProposal.description, 'GENESIS')
         assert.equal(genesisProposal.voteCount.toString(), '0')
 
@@ -79,6 +81,7 @@ if (developmentChains.includes(network.name)) {
             'Registering proposals cant be started now'
           )
         })
+
         it("'ProposalsRegistrationStarted' status", async () => {
           await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
         })
@@ -232,9 +235,7 @@ if (developmentChains.includes(network.name)) {
         const tx = await voting.addVoter(_user1.address)
         tx.wait(1)
 
-        const voter = await voting
-          .connect(_user1.address)
-          .getVoter(_user1.address)
+        const voter = await voting.connect(_user1).getVoter(_user1.address)
 
         assert.equal(voter.isRegistered, true)
         assert.equal(voter.hasVoted, false)
@@ -258,22 +259,16 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'ProposalsRegistrationStarted' status", async () => {
-          await voting.startProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
   })
         it("'ProposalsRegistrationEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
+          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
         })
         it("'VotingSessionStarted' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionStarted')
         })
         it("'VotingSessionEnded' status", async () => {
-          await voting.startProposalsRegistering()
-          await voting.endProposalsRegistering()
-          await voting.startVotingSession()
-          await voting.endVotingSession()
+          await setWorkflowStatus(voting, 'VotingSessionEnded')
         })
 
         // no function to set status to 'VotesTallied' 🤷
@@ -288,9 +283,7 @@ if (developmentChains.includes(network.name)) {
   })
 
       it('Retrieve own voter info', async () => {
-        const voter = await voting
-          .connect(_user1.address)
-          .getVoter(_user1.address)
+        const voter = await voting.connect(_user1).getVoter(_user1.address)
 
         assert.equal(voter.isRegistered, true)
         assert.equal(voter.hasVoted, false)
@@ -298,14 +291,40 @@ if (developmentChains.includes(network.name)) {
       })
 
       it("Retrieve another voter's info", async () => {
-        const voter = await voting
-          .connect(_user1.address)
-          .getVoter(_user2.address)
+        const voter = await voting.connect(_user1).getVoter(_user2.address)
 
         assert.equal(voter.isRegistered, true)
         assert.equal(voter.hasVoted, false)
         assert.equal(voter.votedProposalId.toString(), '0')
       })
+    })
+  })
+
+  describe('Proposals functions', () => {
+    beforeEach(async () => {
+      await voting.addVoter(_user1.address)
+      await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+    })
+
+    it('Add a new proposal', async () => {
+      const tx = await voting.connect(_user1).addProposal(proposal1)
+      tx.wait(1)
+
+      const expectedProposalId = 1
+
+      const proposal = await voting
+        .connect(_user1)
+        .getOneProposal(expectedProposalId)
+
+      assert.equal(proposal.description, proposal1)
+
+      expect(tx).to.emit('ProposalRegistered').withArgs(expectedProposalId)
+    })
+
+    it("Can't to add an empty proposal", async () => {
+      await expect(voting.connect(_user1).addProposal('')).to.be.revertedWith(
+        'Vous ne pouvez pas ne rien proposer'
+      )
     })
   })
 }
