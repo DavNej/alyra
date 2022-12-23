@@ -11,9 +11,12 @@ if (developmentChains.includes(network.name)) {
   let _user2
   let _user3
 
-  const proposal1 = 'Peace on earth'
-  const proposal2 = 'Be happy'
-  const proposal3 = 'Educate ourselves'
+  const proposals = [
+    { description: 'GENESIS', voteCount: 0 },
+    { description: 'Peace on earth' },
+    { description: 'Be happy' },
+    { description: 'Educate ourselves' },
+  ]
 
   const WorkflowStatus = {
     RegisteringVoters: 0,
@@ -56,76 +59,81 @@ if (developmentChains.includes(network.name)) {
     })
 
     it('startProposalsRegistering successfuly', async () => {
-        const tx = await voting.startProposalsRegistering()
-        tx.wait(1)
+      const tx = await voting.startProposalsRegistering()
+      tx.wait(1)
 
-        const newStatus = await voting.workflowStatus()
-        assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationStarted)
+      const newStatus = await voting.workflowStatus()
+      assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationStarted)
 
-        const genesisProposal = await voting.connect(_user1).getOneProposal(0)
-        assert.equal(genesisProposal.description, 'GENESIS')
-        assert.equal(genesisProposal.voteCount.toString(), '0')
+      const proposal = await voting.connect(_user1).getOneProposal(0)
 
-        expect(tx)
-          .to.emit('WorkflowStatusChange')
-          .withArgs(
-            WorkflowStatus.RegisteringVoters,
-            WorkflowStatus.ProposalsRegistrationStarted
-          )
-      })
+      const genesisProposal = proposals[0]
+      assert.equal(proposal.description, genesisProposal.description)
+      assert.equal(
+        proposal.voteCount.toString(),
+        genesisProposal.voteCount.toString()
+      )
+
+      expect(tx)
+        .to.emit('WorkflowStatusChange')
+        .withArgs(
+          WorkflowStatus.RegisteringVoters,
+          WorkflowStatus.ProposalsRegistrationStarted
+        )
+    })
 
     it('endProposalsRegistering successfuly', async () => {
-        await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+      await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
 
-        const tx = await voting.endProposalsRegistering()
-        tx.wait(1)
+      const tx = await voting.endProposalsRegistering()
+      tx.wait(1)
 
-        const newStatus = await voting.workflowStatus()
-        assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationEnded)
+      const newStatus = await voting.workflowStatus()
+      assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationEnded)
 
-        expect(tx)
-          .to.emit('WorkflowStatusChange')
-          .withArgs(
-            WorkflowStatus.ProposalsRegistrationStarted,
-            WorkflowStatus.ProposalsRegistrationEnded
-          )
-      })
+      expect(tx)
+        .to.emit('WorkflowStatusChange')
+        .withArgs(
+          WorkflowStatus.ProposalsRegistrationStarted,
+          WorkflowStatus.ProposalsRegistrationEnded
+        )
+    })
 
     it('startVotingSession successfuly', async () => {
-        await voting.startProposalsRegistering()
-        await voting.endProposalsRegistering()
+      await voting.startProposalsRegistering()
+      await voting.endProposalsRegistering()
 
-        const tx = await voting.startVotingSession()
-        tx.wait(1)
+      const tx = await voting.startVotingSession()
+      tx.wait(1)
 
-        const newStatus = await voting.workflowStatus()
-        assert.equal(newStatus, WorkflowStatus.VotingSessionStarted)
+      const newStatus = await voting.workflowStatus()
+      assert.equal(newStatus, WorkflowStatus.VotingSessionStarted)
 
-        expect(tx)
-          .to.emit('WorkflowStatusChange')
-          .withArgs(
-            WorkflowStatus.ProposalsRegistrationEnded,
-            WorkflowStatus.VotingSessionStarted
-          )
-      })
+      expect(tx)
+        .to.emit('WorkflowStatusChange')
+        .withArgs(
+          WorkflowStatus.ProposalsRegistrationEnded,
+          WorkflowStatus.VotingSessionStarted
+        )
+    })
 
     it('endVotingSession successfuly', async () => {
-        await voting.startProposalsRegistering()
-        await voting.endProposalsRegistering()
-        await voting.startVotingSession()
+      await voting.startProposalsRegistering()
+      await voting.endProposalsRegistering()
+      await voting.startVotingSession()
 
-        const tx = await voting.endVotingSession()
-        tx.wait(1)
+      const tx = await voting.endVotingSession()
+      tx.wait(1)
 
-        const newStatus = await voting.workflowStatus()
-        assert.equal(newStatus, WorkflowStatus.VotingSessionEnded)
+      const newStatus = await voting.workflowStatus()
+      assert.equal(newStatus, WorkflowStatus.VotingSessionEnded)
 
-        expect(tx)
-          .to.emit('WorkflowStatusChange')
-          .withArgs(
-            WorkflowStatus.VotingSessionStarted,
-            WorkflowStatus.VotingSessionEnded
-          )
+      expect(tx)
+        .to.emit('WorkflowStatusChange')
+        .withArgs(
+          WorkflowStatus.VotingSessionStarted,
+          WorkflowStatus.VotingSessionEnded
+        )
     })
   })
 
@@ -156,7 +164,7 @@ if (developmentChains.includes(network.name)) {
       beforeEach(async () => {
         await voting.addVoter(_user1.address)
         await voting.addVoter(_user2.address)
-  })
+      })
 
       it("Retrieve voter's own info", async () => {
         const voter = await voting.connect(_user1).getVoter(_user1.address)
@@ -177,33 +185,66 @@ if (developmentChains.includes(network.name)) {
   })
 
   describe('Proposals functions', () => {
-    beforeEach(async () => {
-      await voting.addVoter(_user1.address)
-      await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
-    })
-
     describe('addProposal', () => {
-    it('Add a new proposal', async () => {
-      const tx = await voting.connect(_user1).addProposal(proposal1)
-      tx.wait(1)
+      beforeEach(async () => {
+        await voting.addVoter(_user1.address)
+        await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+      })
+      it('Add a new proposal', async () => {
+        const proposalId = 1
+        const proposal = proposals[proposalId]
 
-      const expectedProposalId = 1
+        const tx = await voting
+          .connect(_user1)
+          .addProposal(proposal.description)
+        tx.wait(1)
 
-      const proposal = await voting
-        .connect(_user1)
-        .getOneProposal(expectedProposalId)
+        const newProposal = await voting
+          .connect(_user1)
+          .getOneProposal(proposalId)
 
-      assert.equal(proposal.description, proposal1)
+        assert.equal(newProposal.description, proposal.description)
 
-      expect(tx).to.emit('ProposalRegistered').withArgs(expectedProposalId)
-    })
+        expect(tx).to.emit('ProposalRegistered').withArgs(proposalId)
+      })
 
-    it("Can't to add an empty proposal", async () => {
-      await expect(voting.connect(_user1).addProposal('')).to.be.revertedWith(
-        'Vous ne pouvez pas ne rien proposer'
-      )
+      it("Can't to add an empty proposal", async () => {
+        await expect(voting.connect(_user1).addProposal('')).to.be.revertedWith(
+          'Vous ne pouvez pas ne rien proposer'
+        )
       })
     })
+
+    describe('getOneProposal', () => {
+      beforeEach(async () => {
+        await voting.addVoter(_user1.address)
+        await voting.addVoter(_user2.address)
+        await voting.addVoter(_user3.address)
+
+        await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+
+        await voting.connect(_user1).addProposal(proposals[1].description)
+        await voting.connect(_user2).addProposal(proposals[2].description)
+        await voting.connect(_user3).addProposal(proposals[3].description)
+      })
+
+      it('Retrieve genesis proposal', async () => {
+        const proposal = await voting.connect(_user1).getOneProposal(0)
+        assert.equal(proposal.description, proposals[0].description)
+        assert.equal(proposal.voteCount.toString(), '0')
+      })
+
+      it("Retrieve voter's own proposal", async () => {
+        const proposal = await voting.connect(_user1).getOneProposal(1)
+        assert.equal(proposal.description, proposals[1].description)
+        assert.equal(proposal.voteCount.toString(), '0')
+      })
+
+      it("Retrieve another voter's proposal", async () => {
+        const proposal = await voting.connect(_user1).getOneProposal(2)
+        assert.equal(proposal.description, proposals[2].description)
+        assert.equal(proposal.voteCount.toString(), '0')
+      })
     })
   })
 }
