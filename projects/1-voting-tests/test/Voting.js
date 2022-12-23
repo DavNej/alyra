@@ -40,9 +40,68 @@ if (developmentChains.includes(network.name)) {
       assert.equal(await voting.owner(), _owner.address)
     })
     it('Set the first status to "RegisteringVoters"', async () => {
+      const currentStatus = await voting.workflowStatus()
       assert.equal(currentStatus, WorkflowStatus.RegisteringVoters)
     })
   })
+
+  describe('WorkflowStatus functions', () => {
+    beforeEach(async () => {
+      await voting.addVoter(_user1.address)
+    })
+
+    describe('startProposalsRegistering', () => {
+      it('Set Proposals registration phase successfuly', async () => {
+        const tx = await voting.startProposalsRegistering()
+        tx.wait(1)
+
+        const newStatus = await voting.workflowStatus()
+        assert.equal(newStatus, WorkflowStatus.ProposalsRegistrationStarted)
+
+        const genesisProposal = await voting
+          .connect(_user1.address)
+          .getOneProposal(0)
+        assert.equal(genesisProposal.description, 'GENESIS')
+        assert.equal(genesisProposal.voteCount.toString(), '0')
+
+        expect(tx)
+          .to.emit('WorkflowStatusChange')
+          .withArgs(
+            WorkflowStatus.RegisteringVoters,
+            WorkflowStatus.ProposalsRegistrationStarted
+          )
+      })
+
+      describe("Fails to set Proposals registration phase when NOT in status 'RegisteringVoters'", async () => {
+        afterEach(async () => {
+          await expect(voting.startProposalsRegistering()).to.be.revertedWith(
+            'Registering proposals cant be started now'
+          )
+        })
+        it("'ProposalsRegistrationStarted' status", async () => {
+          await voting.startProposalsRegistering()
+        })
+        it("'ProposalsRegistrationEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+        })
+        it("'VotingSessionStarted' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+        })
+        it("'VotingSessionEnded' status", async () => {
+          await voting.startProposalsRegistering()
+          await voting.endProposalsRegistering()
+          await voting.startVotingSession()
+          await voting.endVotingSession()
+        })
+
+        // no function to set status to 'VotesTallied' 🤷
+      })
+    })
+  })
+
   describe('Voter functions', () => {
     describe('addVoter', () => {
       it('Register a new voter', async () => {
