@@ -250,4 +250,35 @@ if (developmentChains.includes(network.name)) {
       })
     })
   })
+
+  describe('Votes functions', () => {
+    describe('setVote', () => {
+      beforeEach(async () => {
+        await deployments.fixture(['voting'])
+        voting = await ethers.getContract('Voting')
+
+        await voting.addVoter(user1.address)
+        await voting.startProposalsRegistering()
+        await voting.connect(user1).addProposal(proposals[1].description)
+
+        await voting.endProposalsRegistering()
+        await voting.startVotingSession()
+      })
+
+      it('Vote for a proposal', async () => {
+        const proposalId = 1
+
+        const voteTx = await voting.connect(user1).setVote(proposalId)
+        voteTx.wait(1)
+
+        const proposalRes = await voting
+          .connect(user1)
+          .getOneProposal(proposalId)
+        assert.equal(proposalRes.voteCount.toString(), '1')
+
+        const voterRes = await voting.connect(user1).getVoter(user1.address)
+        assert.equal(voterRes.hasVoted, true)
+        assert.equal(voterRes.votedProposalId.toString(), String(proposalId))
+      })
+    })
 }
