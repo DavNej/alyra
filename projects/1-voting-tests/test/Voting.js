@@ -280,5 +280,25 @@ if (developmentChains.includes(network.name)) {
         assert.equal(voterRes.hasVoted, true)
         assert.equal(voterRes.votedProposalId.toString(), String(proposalId))
       })
+
+      it("Can't vote for an unexisting proposal", async () => {
+        const proposalId = 5
+
+        await expect(
+          voting.connect(user1).setVote(proposalId)
+        ).to.be.revertedWith('Proposal not found')
+      })
+
+      it("Can't vote if voter already voted", async () => {
+        const proposalId = 1
+
+        const voteTx = await voting.connect(user1).setVote(proposalId)
+        voteTx.wait(1)
+
+        await expect(voting.connect(user1).setVote(2)).to.be.revertedWith(
+          'You have already voted'
+        )
+      })
+    })
     })
 }
