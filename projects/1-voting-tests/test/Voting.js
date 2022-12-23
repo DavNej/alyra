@@ -96,5 +96,33 @@ if (developmentChains.includes(network.name)) {
         // no function to set status to 'VotesTallied' 🤷
       })
     })
+
+    describe('getVoter', () => {
+      beforeEach(async () => {
+        await voting.addVoter(_user1.address)
+        await voting.addVoter(_user2.address)
+        await voting.addVoter(_user3.address)
+  })
+
+      it('Retrieve own voter info', async () => {
+        const voter = await voting
+          .connect(_user1.address)
+          .getVoter(_user1.address)
+
+        assert.equal(voter.isRegistered, true)
+        assert.equal(voter.hasVoted, false)
+        assert.equal(voter.votedProposalId.toString(), '0')
+      })
+
+      it("Retrieve another voter's info", async () => {
+        const voter = await voting
+          .connect(_user1.address)
+          .getVoter(_user2.address)
+
+        assert.equal(voter.isRegistered, true)
+        assert.equal(voter.hasVoted, false)
+        assert.equal(voter.votedProposalId.toString(), '0')
+      })
+    })
   })
 }
