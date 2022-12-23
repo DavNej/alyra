@@ -1,6 +1,6 @@
 const { network, deployments, ethers } = require('hardhat')
 const { developmentChains } = require('../helper-hardhat-config')
-const { setWorkflowStatus } = require('./utils')
+const { setWorkflowStatus, WorkflowStatus, proposals } = require('./utils')
 
 const { expect } = require('chai')
 
@@ -8,19 +8,16 @@ if (developmentChains.includes(network.name)) {
   let voting
   let _user1
 
-  const proposal1 = 'Peace on earth'
-
   before(async () => {
     const accounts = await ethers.getSigners()
     _user1 = accounts[1]
   })
 
+  describe('Revert if NOT called on the right WorkflowStatus', () => {
   beforeEach(async () => {
     await deployments.fixture(['voting'])
     voting = await ethers.getContract('Voting')
   })
-
-  describe('Revert if NOT called on the right WorkflowStatus', () => {
     describe('Function changing WorkflowStatus', () => {
       describe('startProposalsRegistering only in status "RegisteringVoters"', () => {
         afterEach(async () => {
@@ -30,16 +27,22 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+          await setWorkflowStatus(
+            voting,
+            WorkflowStatus.ProposalsRegistrationStarted
+          )
         })
         it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
+          await setWorkflowStatus(
+            voting,
+            WorkflowStatus.ProposalsRegistrationEnded
+          )
         })
         it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
         })
         it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
         })
       })
 
@@ -51,16 +54,19 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'RegisteringVoters' status", async () => {
-          await setWorkflowStatus(voting, 'RegisteringVoters')
+          await setWorkflowStatus(voting, WorkflowStatus.RegisteringVoters)
         })
         it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
+          await setWorkflowStatus(
+            voting,
+            WorkflowStatus.ProposalsRegistrationEnded
+          )
         })
         it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
         })
         it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
         })
       })
 
@@ -72,16 +78,19 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'RegisteringVoters' status", async () => {
-          await setWorkflowStatus(voting, 'RegisteringVoters')
+          await setWorkflowStatus(voting, WorkflowStatus.RegisteringVoters)
         })
         it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+          await setWorkflowStatus(
+            voting,
+            WorkflowStatus.ProposalsRegistrationStarted
+          )
         })
         it("'VotingSessionStarted' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionStarted')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
         })
         it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
         })
       })
 
@@ -93,16 +102,22 @@ if (developmentChains.includes(network.name)) {
         })
 
         it("'RegisteringVoters' status", async () => {
-          await setWorkflowStatus(voting, 'RegisteringVoters')
+          await setWorkflowStatus(voting, WorkflowStatus.RegisteringVoters)
         })
         it("'ProposalsRegistrationStarted' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+          await setWorkflowStatus(
+            voting,
+            WorkflowStatus.ProposalsRegistrationStarted
+          )
         })
         it("'ProposalsRegistrationEnded' status", async () => {
-          await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
+          await setWorkflowStatus(
+            voting,
+            WorkflowStatus.ProposalsRegistrationEnded
+          )
         })
         it("'VotingSessionEnded' status", async () => {
-          await setWorkflowStatus(voting, 'VotingSessionEnded')
+          await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
         })
 
         // no function to set status to 'VotesTallied' 🤷
@@ -117,16 +132,22 @@ if (developmentChains.includes(network.name)) {
       })
 
       it("'ProposalsRegistrationStarted' status", async () => {
-        await setWorkflowStatus(voting, 'ProposalsRegistrationStarted')
+        await setWorkflowStatus(
+          voting,
+          WorkflowStatus.ProposalsRegistrationStarted
+        )
       })
       it("'ProposalsRegistrationEnded' status", async () => {
-        await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
+        await setWorkflowStatus(
+          voting,
+          WorkflowStatus.ProposalsRegistrationEnded
+        )
       })
       it("'VotingSessionStarted' status", async () => {
-        await setWorkflowStatus(voting, 'VotingSessionStarted')
+        await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
       })
       it("'VotingSessionEnded' status", async () => {
-        await setWorkflowStatus(voting, 'VotingSessionEnded')
+        await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
       })
     })
 
@@ -137,21 +158,24 @@ if (developmentChains.includes(network.name)) {
 
       afterEach(async () => {
         await expect(
-          voting.connect(_user1).addProposal(proposal1)
+          voting.connect(_user1).addProposal(proposals[1].description)
         ).to.be.revertedWith('Proposals are not allowed yet')
       })
 
       it("'RegisteringVoters' status", async () => {
-        await setWorkflowStatus(voting, 'RegisteringVoters')
+        await setWorkflowStatus(voting, WorkflowStatus.RegisteringVoters)
       })
       it("'ProposalsRegistrationEnded' status", async () => {
-        await setWorkflowStatus(voting, 'ProposalsRegistrationEnded')
+        await setWorkflowStatus(
+          voting,
+          WorkflowStatus.ProposalsRegistrationEnded
+        )
       })
       it("'VotingSessionStarted' status", async () => {
-        await setWorkflowStatus(voting, 'VotingSessionStarted')
+        await setWorkflowStatus(voting, WorkflowStatus.VotingSessionStarted)
       })
       it("'VotingSessionEnded' status", async () => {
-        await setWorkflowStatus(voting, 'VotingSessionEnded')
+        await setWorkflowStatus(voting, WorkflowStatus.VotingSessionEnded)
       })
     })
   })
