@@ -133,3 +133,12 @@ if (developmentChains.includes(network.name)) {
     })
   })
 }
+
+/*
+* GAS COST
+
+const transactionResponse = await bank.withdraw(900)
+const transactionReceipt = await transactionResponse.wait()
+const { gasUsed, effectiveGasPrice } = transactionReceipt
+const gasCost = gasUsed.mul(effectiveGasPrice)
+*/
