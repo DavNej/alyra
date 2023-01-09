@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 error Stageable__ActionForbiddenAtThisStage(uint256 _status);
+
+/**
+ * @title A voting stage contract
+ * @author David Nejar
+ */
 
 abstract contract Stageable is Ownable {
     enum WorkflowStatus {
@@ -19,6 +24,7 @@ abstract contract Stageable is Ownable {
 
     /**
      * @dev Throws if is not in the right stage.
+     * @param _status the status to allow
      */
     modifier onlyInStatus(WorkflowStatus _status) {
         if (workflowStatus != _status) {
@@ -28,7 +34,7 @@ abstract contract Stageable is Ownable {
     }
 
     constructor() {
-        // Set default stage to RegisteringVoters
+        /// @dev Set default stage to RegisteringVoters
         workflowStatus = WorkflowStatus.RegisteringVoters;
     }
 
@@ -37,7 +43,7 @@ abstract contract Stageable is Ownable {
         WorkflowStatus newStatus
     );
 
-    // We assume that the owner of the contract will be able to pass freely from one stage to another regardless of the order
+    /// @dev We assume that the owner of the contract will be able to pass freely from one stage to another regardless of the order
 
     /**
      * @dev Set the workflow stage to RegisteringVoters.

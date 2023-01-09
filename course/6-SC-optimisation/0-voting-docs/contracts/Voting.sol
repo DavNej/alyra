@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Stageable.sol";
 
 error Voting__NotInWhitelist(address _address);
@@ -27,9 +27,11 @@ Be happy together
 */
 
 /**
- * @title Voting
- * @dev Voting contract for small organizations
+ * @title Voting contract for small organizations
+ * @author David Nejar
+ * @notice You can use this contract if you want to manage a vote with a list of voters
  */
+
 contract Voting is Ownable, Stageable {
     struct Voter {
         bool hasVoted;
