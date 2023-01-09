@@ -4,6 +4,7 @@ require('hardhat-gas-reporter')
 require('solidity-coverage')
 
 require('hardhat-deploy')
+require('hardhat-docgen')
 require('dotenv').config()
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ''
@@ -39,6 +40,10 @@ module.exports = {
       goerli: ETERSCAN_API_KEY,
       polygonMumbai: POLYGONSCAN_API_KEY,
     },
+  },
+  docgen: {
+    path: './docs',
+    clear: true,
   },
   namedAccounts: {
     deployer: {
